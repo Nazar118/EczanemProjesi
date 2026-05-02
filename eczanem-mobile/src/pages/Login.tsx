@@ -33,7 +33,7 @@ const Login: React.FC = () => {
       
       // Başarılı girişten sonra biraz bekletip yönlendiriyoruz
       setTimeout(() => {
-        window.location.href = '/dashboard'; 
+        window.location.href = '/app/home';
       }, 1000);
 
     } catch (error) {

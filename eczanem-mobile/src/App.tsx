@@ -1,75 +1,101 @@
+import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { 
+  IonApp, IonRouterOutlet, setupIonicReact,
+  IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel
+} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+import { homeOutline, gridOutline, heartOutline, cartOutline, personOutline } from 'ionicons/icons';
+
+/* Sayfalarımız */
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Medicines from './pages/Medicines';
 import MedicineDetail from './pages/MedicineDetail';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
 import Favorites from './pages/Favorites';
-import Register from './pages/Register';
 
-/* Core CSS required for Ionic components to work properly */
+/* Core CSS */
 import '@ionic/react/css/core.css';
-
-/* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
 import '@ionic/react/css/padding.css';
 import '@ionic/react/css/float-elements.css';
 import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
-
-/* Theme variables */
 import './theme/variables.css';
 
 setupIonicReact();
+
+// 🎯 E-TİCARET DÜNYAMIZ (Alt Menülü Kısım)
+const MainTabs: React.FC = () => {
+  return (
+    <IonTabs>
+      <IonRouterOutlet>
+        
+        {/* 🎯 ÇÖZÜM: render={() => ...} formatına geçtik */}
+        <Route exact path="/app/home" render={() => <Dashboard />} /> 
+        <Route exact path="/app/categories" render={() => <Medicines />} /> 
+        <Route exact path="/app/favorites" render={() => <Favorites />} />
+        <Route exact path="/app/cart" render={() => <Orders />} /> 
+        <Route exact path="/app/profile" render={() => <Profile />} />
+        <Route exact path="/app/medicine-detail/:id" render={() => <MedicineDetail />} />
+
+        {/* /app dizinine girilirse direkt anasayfaya at */}
+        <Route exact path="/app" render={() => <Redirect to="/app/home" />} />
+
+      </IonRouterOutlet>
+
+      <IonTabBar slot="bottom" style={{ '--background': '#ffffff', borderTop: '1px solid #f0f0f0', paddingBottom: '4px', paddingTop: '4px' }}>
+        <IonTabButton tab="home" href="/app/home">
+          <IonIcon icon={homeOutline} />
+          <IonLabel style={{ fontWeight: '500' }}>Anasayfa</IonLabel>
+        </IonTabButton>
+
+        <IonTabButton tab="categories" href="/app/categories">
+          <IonIcon icon={gridOutline} />
+          <IonLabel style={{ fontWeight: '500' }}>Kategoriler</IonLabel>
+        </IonTabButton>
+
+        <IonTabButton tab="favorites" href="/app/favorites">
+          <IonIcon icon={heartOutline} />
+          <IonLabel style={{ fontWeight: '500' }}>Favoriler</IonLabel>
+        </IonTabButton>
+
+        <IonTabButton tab="cart" href="/app/cart">
+          <IonIcon icon={cartOutline} />
+          <IonLabel style={{ fontWeight: '500' }}>Sepet</IonLabel>
+        </IonTabButton>
+
+        <IonTabButton tab="profile" href="/app/profile">
+          <IonIcon icon={personOutline} />
+          <IonLabel style={{ fontWeight: '500' }}>Hesabım</IonLabel>
+        </IonTabButton>
+      </IonTabBar>
+    </IonTabs>
+  );
+};
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
         
-        {/* Login rotamızı ekledik */}
-        <Route exact path="/login">
-          <Login />
-        </Route>
+        {/* KİMLİK DÜNYASI */}
+        <Route exact path="/login" render={() => <Login />} />
+        <Route exact path="/register" render={() => <Register />} />
 
-        {/* Uygulama ilk açıldığında otomatik /login'e gitsin */}
-        <Route exact path="/">
-          <Redirect to="/login" />
-        </Route>
-        <Route exact path="/dashboard">
-          <Dashboard />
-        </Route>
-        <Route exact path="/medicines">
-          <Medicines />
-        </Route>
-        <Route exact path="/medicine-detail/:id">
-          <MedicineDetail />
-        </Route>
-        <Route exact path="/orders">
-          <Orders />
-       </Route>
-       <Route exact path="/profile">
-        <Profile />
-      </Route>
-      <Route exact path="/favorites">
-       <Favorites />
-      </Route>
-      <Route exact path="/register">
-       <Register />
-       </Route>
+        {/* E-TİCARET DÜNYASI */}
+        <Route path="/app" render={() => <MainTabs />} />
+
+        {/* UYGULAMA İLK AÇILDIĞINDA */}
+        <Route exact path="/" render={() => <Redirect to="/login" />} />
+
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>

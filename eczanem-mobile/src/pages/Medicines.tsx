@@ -1,132 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import { 
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar, 
-  IonButtons, IonBackButton, IonSearchbar,
-  IonSkeletonText, IonCard, IonCardHeader, IonCardContent 
+  IonButtons, IonButton, IonSearchbar, IonList, 
+  IonItem, IonLabel, IonIcon, IonSpinner
 } from '@ionic/react';
-import { getMedicines } from '../services/medicineService';
-import { useIonRouter } from '@ionic/react';
+import { chevronForwardOutline, chevronBackOutline } from 'ionicons/icons'; 
+import { getCategories } from '../services/productService'; 
 
-// İŞTE YARATTIĞIMIZ EFSANE KARTI BURAYA ÇAĞIRIYORUZ
-import MedicineCard from '../components/MedicineCard'; 
-
-interface Medicine {
+interface Category {
   id: number;
   name: string;
-  category?: {
-    name: string;
-  };
 }
 
 const Medicines: React.FC = () => {
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
-  const router = useIonRouter();
 
   useEffect(() => {
-    const fetchMedicines = async () => {
+    const fetchCategories = async () => {
       try {
-        const response = await getMedicines(); 
-        setMedicines(response.data); 
-        setLoading(false); 
+        const responseData = await getCategories(); 
+        
+        if (responseData && Array.isArray(responseData)) {
+            const vitrinKategorileri = responseData.filter(cat => {
+              if(!cat.name) return false; 
+              const nameL = cat.name.toLowerCase();
+              return nameL.includes('vitamin') ||
+                     nameL.includes('takviye') ||
+                     nameL.includes('ağız') ||
+                     nameL.includes('dermo') ||
+                     nameL.includes('kozmetik') ||
+                     nameL.includes('anne') ||
+                     nameL.includes('bebek') ||
+                     nameL.includes('bakım');
+            });
+            setCategories(vitrinKategorileri);
+        }
       } catch (error) {
-        console.error("Hata:", error);
+        console.error("Kategoriler yüklenemedi:", error);
+      } finally {
         setLoading(false);
       }
     };
-    fetchMedicines(); 
+    fetchCategories(); 
   }, []);
 
-  const filteredMedicines = medicines.filter(med => 
-    med.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredCategories = categories.filter(cat => 
+    cat.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        {/* 1. Üstteki Ana Kırmızı Çubuk */}
         <IonToolbar color="primary">
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/dashboard" text="Geri" />
+            {/* 🔥 İŞTE SİHİRLİ DOKUNUŞ BURADA 🔥 */}
+            {/* routerLink ve routerDirection kullanarak Ionic'in geçişleri doğal yolla (sorunsuz) halletmesini sağlıyoruz */}
+            <IonButton routerLink="/dashboard" routerDirection="back">
+              <IonIcon slot="icon-only" icon={chevronBackOutline} style={{ color: 'white' }} />
+            </IonButton>
           </IonButtons>
-          <IonTitle>İlaç Listesi</IonTitle>
+          <IonTitle>Kategoriler</IonTitle>
         </IonToolbar>
 
-        <IonToolbar style={{ '--background': 'var(--ion-background-color)', padding: '0 5px' }}>
+        <IonToolbar style={{ '--background': '#ffffff', padding: '0 5px', borderBottom: '1px solid #f0f0f0' }}>
           <IonSearchbar 
             value={searchText} 
             onIonInput={(e) => setSearchText(e.detail.value!)} 
-            placeholder="İlaç ara..."
+            placeholder="Kategori ara..."
             animated={true}
             style={{ 
-              paddingTop: '10px',
-              paddingBottom: '10px', 
+              paddingTop: '8px',
+              paddingBottom: '8px', 
               '--box-shadow': 'none',
-              '--background': '#ffffff', // Arama kutusunun içi bembeyaz ve ferah
-              '--border-radius': '12px'  // Modern yuvarlak köşeler
+              '--background': '#f4f5f8', 
+              '--border-radius': '8px' 
             }}
           />
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
-        
+      <IonContent style={{ '--background': '#ffffff' }}>
         {loading ? (
-          <div style={{ paddingBottom: '20px' }}>
-            {[1, 2, 3, 4].map((i) => (
-              <IonCard key={i} style={{ borderRadius: '15px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', marginBottom: '15px' }}>
-                <IonCardHeader style={{ paddingBottom: '0' }}>
-                  <IonSkeletonText animated style={{ width: '70%', height: '24px', borderRadius: '4px' }} />
-                </IonCardHeader>
-                <IonCardContent>
-                  <IonSkeletonText animated style={{ width: '40%', height: '16px', borderRadius: '4px', marginTop: '8px' }} />
-                </IonCardContent>
-              </IonCard>
-            ))}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+            <IonSpinner name="crescent" color="primary" />
           </div>
-        ) : filteredMedicines.length === 0 ? (
-          <div style={{ textAlign: 'center', marginTop: '50px', color: 'gray' }}>
-            <h2>Sonuç Bulunamadı 🔍</h2>
+        ) : filteredCategories.length === 0 ? (
+          <div style={{ textAlign: 'center', marginTop: '50px', color: '#888' }}>
+            <p>Sonuç bulunamadı 🔍</p>
           </div>
         ) : (
-          <div style={{ paddingBottom: '20px' }}>
-            {Object.entries(
-              filteredMedicines.reduce((gruplar, ilac) => {
-                const kategori = ilac.category?.name || 'Diğer İlaçlar';
-                if (!gruplar[kategori]) gruplar[kategori] = [];
-                gruplar[kategori].push(ilac);
-                return gruplar;
-              }, {} as Record<string, Medicine[]>)
-            ).map(([kategoriAdi, ilaclar]) => (
-              
-              <div key={kategoriAdi} style={{ marginBottom: '24px' }}>
+          <IonList lines="full" style={{ padding: 0 }}>
+            {filteredCategories.map((cat) => (
+              <IonItem 
+                key={cat.id} 
+                button 
+                detail={false} 
+                onClick={() => {
+                  console.log(`${cat.name} kategorisine tıklandı!`);
+                }}
+                style={{
+                  '--padding-start': '20px',
+                  '--padding-end': '20px',
+                  '--min-height': '60px'
+                }}
+              >
+                <IonLabel 
+                  style={{ 
+                    fontSize: '14px', 
+                    fontWeight: '600', 
+                    color: '#333',
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {cat.name}
+                </IonLabel>
                 
-                <h3 style={{ 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: 'var(--ion-color-primary)', 
-                  marginLeft: '8px',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>
-                  {kategoriAdi}
-                </h3>
-
-                {ilaclar.map((med) => (
-                  <MedicineCard 
-                    key={med.id}
-                    name={med.name}
-                    date="Detayları ve stok durumunu gör"
-                    onClick={() => router.push(`/medicine-detail/${med.id}`)}
-                  />
-                ))}
-                
-              </div>
-
+                <IonIcon 
+                  slot="end" 
+                  icon={chevronForwardOutline} 
+                  style={{ fontSize: '18px', color: '#888' }} 
+                />
+              </IonItem>
             ))}
-          </div>
+          </IonList>
         )}
       </IonContent>
     </IonPage>

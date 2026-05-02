@@ -24,6 +24,7 @@ import ChronicDiseases from './pages/Diseases/ChronicDiseases';
 import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import OnlineOrders from './pages/OnlineOrders';
+import AddVitrinProduct from './pages/Vitrin/AddVitrinProduct';
 function App() {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -70,6 +71,7 @@ function App() {
            <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />          
            <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
            <Route path="/online-orders" element={user ? <OnlineOrders /> : <Navigate to="/login" />} />
+           <Route path="/vitrin/add" element={user ? <AddVitrinProduct /> : <Navigate to="/login" />} />
           </Routes>
         </div>
       </div>

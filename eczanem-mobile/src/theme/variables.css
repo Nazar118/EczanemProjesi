@@ -4,12 +4,13 @@ http://ionicframework.com/docs/theming/ */
 http://ionicframework.com/docs/theming/ */
 
 :root {
-  /* 🍑 Ana Vurgu Rengi (Soft Mercan / Tatlı Kırmızı) */
-  --ion-color-primary: #e54242;
-  --ion-color-primary-rgb: 229,66,66;
+  /* 🌿 SOFT SU YEŞİLİ / TURKUAZ (Ferah E-Ticaret / Sağlık Teması) */
+  --ion-color-primary: #14b8a6;
+  --ion-color-primary-rgb: 20, 184, 166;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-shade: #c93a3a;
-  --ion-color-primary-tint: #e85555;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #11a292;
+  --ion-color-primary-tint: #2cc0b0;
 
   /* ☁️ Genel Arka Plan Rengi (Ferah, çok açık gri/beyaz) */
   --ion-background-color: #f6f8fb;

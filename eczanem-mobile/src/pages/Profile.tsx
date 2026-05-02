@@ -41,7 +41,7 @@ const Profile: React.FC = () => {
         {/* Header'ın arkasını da Narecza ferahlığına uyarladık */}
         <IonToolbar style={{ '--background': 'var(--ion-background-color)' }}>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/dashboard" text="Geri" color="primary" />
+            <IonBackButton defaultHref="/app/home" text="Geri" color="primary" />
           </IonButtons>
           <IonTitle style={{ fontWeight: 'bold', color: 'var(--ion-color-primary)' }}>Profilim</IonTitle>
         </IonToolbar>

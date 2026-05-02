@@ -117,7 +117,35 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* 4. SATIŞ İŞLEMLERİ (Sadece Admin) */}
+          {/* 🛍️ 4. VİTRİN YÖNETİMİ & ONLİNE SİPARİŞLER  */}
+          {isAdmin && (
+            <li className="nav-item">
+                <div 
+                    className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'vitrin' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
+                    onClick={() => toggleMenu('vitrin')}
+                    style={{cursor: 'pointer'}}
+                >
+                    <div className="d-flex align-items-center gap-2">🛍️ <span>Vitrin Yönetimi</span></div>
+                    <small>{openMenu === 'vitrin' ? '▼' : '▶'}</small>
+                </div>
+                {openMenu === 'vitrin' && (
+                    <ul className="list-unstyled ms-4 mt-1 border-start border-secondary ps-2">
+                        <li>
+                            <Link to="/vitrin/add" className="nav-link text-warning py-1 small fw-bold">
+                                ➕ Yeni Ürün Ekle
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/online-orders" className="nav-link text-white-50 py-1 small">
+                                📦 Online Siparişler
+                            </Link>
+                        </li>
+                    </ul>
+                )}
+            </li>
+          )}
+
+          {/* 💰 5. SATIŞ İŞLEMLERİ  */}
           {isAdmin && (
             <li className="nav-item">
                 <div 
@@ -133,15 +161,6 @@ export default function Sidebar() {
                         <li><Link to="/sales" className="nav-link text-white-50 py-1 small">💸 Satış Yap</Link></li>
                         <li><Link to="/sales/history" className="nav-link text-white-50 py-1 small">📋 Satış Geçmişi</Link></li>
                         <li><Link to="/reports" className="nav-link text-white-50 py-1 small">📈 Raporlar</Link></li>
-                        
-                        {/* 👇 İŞTE YENİ EKLEDİĞİMİZ KISIM BURASI 👇 */}
-                        <li className="mt-2">
-                            <Link to="/online-orders" className="nav-link py-1 small text-warning fw-bold">
-                                📦 Online Siparişler
-                            </Link>
-                        </li>
-                        {/* 👆 YENİ KISIM SONU 👆 */}
-                        
                     </ul>
                 )}
             </li>
