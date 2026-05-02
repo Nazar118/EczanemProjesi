@@ -12,5 +12,7 @@ namespace Eczanem.Api.Models
         public string Type { get; set; } = string.Empty; // Örn: "İlaç Türü", "Hastalık Grubu", "Özel Etiket"
 
         public string Description { get; set; } = string.Empty; // Örn: "Ağrı ve sızı kesici ilaçlar grubu"
+        public string? Icon { get; set; } = "gridOutline"; 
+        public string? ColorHex { get; set; } = "#f4f5f8";
     }
 }

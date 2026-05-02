@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   IonPage, IonContent, IonHeader, IonToolbar, IonTitle, 
-  IonSearchbar, IonIcon, IonBadge, IonSpinner
+  IonSearchbar, IonIcon, IonBadge, IonSpinner, useIonRouter // 🔥 useIonRouter burada
 } from '@ionic/react';
 import { notificationsOutline, medkitOutline, leafOutline, heartOutline, cartOutline, happyOutline, nutritionOutline, waterOutline, gridOutline } from 'ionicons/icons';
 import { getProducts, getCategories } from '../services/productService'; 
@@ -25,6 +25,9 @@ const Dashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // 🔥 SAYFA GEÇİŞ MOTORU EKLENDİ
+  const router = useIonRouter();
 
   // 💡 SİHİRLİ FONKSİYON: Kategori ismine göre ikon ve renk bulur
   const getCategoryStyle = (categoryName: string) => {
@@ -108,7 +111,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 🎯 2. KATEGORİ KISAYOLLARI (ARTIK TAMAMEN DİNAMİK VE VERİTABANINDAN GELİYOR) */}
+        {/* 🎯 2. KATEGORİ KISAYOLLARI */}
         <div style={{ marginTop: '10px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#111', marginBottom: '15px' }}>Kategoriler</h2>
           <div style={{ display: 'flex', overflowX: 'auto', gap: '15px', paddingBottom: '10px', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
@@ -118,7 +121,11 @@ const Dashboard: React.FC = () => {
               categories.map((category) => {
                 const style = getCategoryStyle(category.name); 
                 return (
-                  <div key={`cat-${category.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '70px', cursor: 'pointer' }}>
+                  <div 
+                    key={`cat-${category.id}`} 
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '70px', cursor: 'pointer' }}
+                    onClick={() => router.push('/app/categories')} // 🔥 İŞTE TIKLAMA ÖZELLİĞİNİ BURAYA EKLEDİK
+                  >
                     <div style={{ 
                       width: '60px', height: '60px', borderRadius: '16px', 
                       backgroundColor: style.bg, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '8px',

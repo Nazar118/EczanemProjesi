@@ -1,26 +1,25 @@
-import { useState, useEffect } from 'react'; // useEffect'i kullanıyoruz
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getNotifications } from '../services/patientMedicineService'; // <-- 1. Servisi İmport Ettik
+import { getNotifications } from '../services/patientMedicineService';
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
   
   const [openMenu, setOpenMenu] = useState("");
-  const [notificationCount, setNotificationCount] = useState(0); // <-- 2. Sayı için State
+  const [notificationCount, setNotificationCount] = useState(0); 
 
-  // --- 3. Bildirim Sayısını Çek ---
   useEffect(() => {
     if (user) {
         getNotifications()
             .then(data => {
-                // Gelen liste uzunluğu bizim bildirim sayımızdır
                 setNotificationCount(data.length);
             })
-            .catch(err => console.error("Bildirim sayısı alınamadı", err));
+            .catch(err => console.error("Bildirim alınamadı", err));
     }
-  }, [user]); // user varsa çalışsın
+  }, [user]);
 
   const handleLogout = () => {
     if(window.confirm("Çıkış yapmak istiyor musunuz?")) {
@@ -32,30 +31,23 @@ export default function Sidebar() {
   };
 
   const toggleMenu = (menuName) => {
-    if (openMenu === menuName) {
-        setOpenMenu(""); 
-    } else {
-        setOpenMenu(menuName); 
-    }
+    setOpenMenu(prev => prev === menuName ? "" : menuName);
   };
 
   if (!user) return null;
 
-  // --- ROL KONTROLLERİ ---
   const isAdmin = user.role === 'admin';
   const isEczaci = user.role === 'eczaci';
 
   return (
-    <div className="bg-dark text-white d-flex flex-column justify-content-between" 
-         style={{ width: "260px", minHeight: "100vh", position: "sticky", top: 0 }}>
+    <div className="bg-dark text-white d-flex flex-column justify-content-between" style={{ width: "260px", minHeight: "100vh", position: "sticky", top: 0 }}>
       
       <div className="p-3">
         <h3 className="mb-4 text-warning fw-bold ps-2">💊 Eczanem Pro</h3>
         
-        {/* PROFİL KARTI */}
         <div className="p-3 mb-4 bg-secondary bg-opacity-25 rounded border border-secondary d-flex align-items-center gap-3">
           <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style={{width: "40px", height: "40px", fontSize: "1.2rem"}}>
-            {user.name.charAt(0)}
+            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
           </div>
           <div style={{lineHeight: "1.2"}}>
             <small className="text-light opacity-75" style={{fontSize: "0.8rem"}}>Hoşgeldin,</small><br/>
@@ -66,7 +58,6 @@ export default function Sidebar() {
 
         <ul className="nav flex-column gap-1">
           
-          {/* 1. DASHBOARD (Admin) */}
           {isAdmin && (
             <li className="nav-item">
               <Link to="/" className="nav-link text-white d-flex align-items-center gap-2">
@@ -75,12 +66,10 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* 2. İLAÇ YÖNETİMİ (Herkes) */}
           <li className="nav-item">
             <div 
                 className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'medicines' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
                 onClick={() => toggleMenu('medicines')} 
-                style={{cursor: 'pointer'}}
             >
                 <div className="d-flex align-items-center gap-2">💊 <span>İlaç Yönetimi</span></div>
                 <small>{openMenu === 'medicines' ? '▼' : '▶'}</small>
@@ -96,13 +85,11 @@ export default function Sidebar() {
             )}
           </li>
 
-          {/* 3. STOK TAKİBİ (Admin + Eczacı) */}
           {(isAdmin || isEczaci) && (
             <li className="nav-item">
                 <div 
                     className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'stocks' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
                     onClick={() => toggleMenu('stocks')}
-                    style={{cursor: 'pointer'}}
                 >
                     <div className="d-flex align-items-center gap-2">📦 <span>Stok Takibi</span></div>
                     <small>{openMenu === 'stocks' ? '▼' : '▶'}</small>
@@ -117,19 +104,22 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* 🛍️ 4. VİTRİN YÖNETİMİ & ONLİNE SİPARİŞLER  */}
           {isAdmin && (
             <li className="nav-item">
                 <div 
                     className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'vitrin' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
                     onClick={() => toggleMenu('vitrin')}
-                    style={{cursor: 'pointer'}}
                 >
                     <div className="d-flex align-items-center gap-2">🛍️ <span>Vitrin Yönetimi</span></div>
                     <small>{openMenu === 'vitrin' ? '▼' : '▶'}</small>
                 </div>
                 {openMenu === 'vitrin' && (
                     <ul className="list-unstyled ms-4 mt-1 border-start border-secondary ps-2">
+                        <li>
+                            <Link to="/vitrin-kategorileri" className="nav-link text-white-50 py-1 small">
+                                🛍️ Kategorileri Yönet
+                            </Link>
+                        </li>
                         <li>
                             <Link to="/vitrin/add" className="nav-link text-warning py-1 small fw-bold">
                                 ➕ Yeni Ürün Ekle
@@ -145,13 +135,11 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* 💰 5. SATIŞ İŞLEMLERİ  */}
           {isAdmin && (
             <li className="nav-item">
                 <div 
                     className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'sales' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
                     onClick={() => toggleMenu('sales')}
-                    style={{cursor: 'pointer'}}
                 >
                     <div className="d-flex align-items-center gap-2">💰 <span>Satış İşlemleri</span></div>
                     <small>{openMenu === 'sales' ? '▼' : '▶'}</small>
@@ -166,12 +154,10 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* 5. HASTALAR (Herkes) */}
           <li className="nav-item">
             <div 
                 className={`nav-link text-white d-flex justify-content-between align-items-center cursor-pointer ${openMenu === 'patients' ? 'bg-secondary bg-opacity-50 rounded' : ''}`}
                 onClick={() => toggleMenu('patients')}
-                style={{cursor: 'pointer'}}
             >
                 <div className="d-flex align-items-center gap-2">👥 <span>Hastalar</span></div>
                 <small>{openMenu === 'patients' ? '▼' : '▶'}</small>
@@ -184,12 +170,9 @@ export default function Sidebar() {
             )}
           </li>
             
-          {/* 6. DİĞERLERİ */}
           <li className="nav-item mt-2 pt-2 border-top border-secondary">
              <Link to="/notifications" className="nav-link text-white d-flex align-items-center gap-2">
                 🔔 <span>Bildirim Merkezi</span>
-                
-                {/* --- 4. DEĞİŞEN KISIM: DİNAMİK ROZET --- */}
                 {notificationCount > 0 && (
                     <span className="badge bg-danger rounded-pill ms-auto">
                         {notificationCount}
@@ -197,6 +180,7 @@ export default function Sidebar() {
                 )}
              </Link>
           </li>
+          
           {isAdmin && (
              <li className="nav-item">
                 <Link to="/settings" className="nav-link text-white d-flex align-items-center gap-2">

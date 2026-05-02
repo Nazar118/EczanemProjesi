@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAllCategories, addCategory, updateCategory, deleteCategory } from '../../services/categoryService';
 import { toast } from 'react-toastify';
 
-export default function Categories() {
+export default function ShowcaseCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -12,18 +12,27 @@ export default function Categories() {
 
   const [formData, setFormData] = useState({
     name: "",
-    type: "İlaç Türü",
-    description: ""
+    type: "Özel Etiket", // 🔥 Sabitlendi. Eczacı bunu değiştiremez.
+    description: "",
+    icon: "gridOutline",  
+    colorHex: "#f3f4f6"   
   });
 
-  // BURADA SADECE İLAÇ TÜRLERİ VAR
-  const categoryTypes = ["İlaç Türü", "Hastalık Grubu"];
+  const availableIcons = [
+    { value: "gridOutline", label: "Kareler (Varsayılan)" },
+    { value: "leafOutline", label: "Yaprak (Vitamin/Doğal)" },
+    { value: "heartOutline", label: "Kalp (Dermo/Kozmetik)" },
+    { value: "medkitOutline", label: "Çanta (Sağlık/Medikal)" },
+    { value: "happyOutline", label: "Gülücük (Anne/Bebek)" },
+    { value: "nutritionOutline", label: "Elma (Spor/Beslenme)" },
+    { value: "waterOutline", label: "Su Damlası (Bakım)" }
+  ];
 
   const loadData = () => {
     getAllCategories()
       .then(data => {
-        // 🔥 SADECE İLAÇ OLANLARI FİLTRELE (Özel Etiket OLMAYANLAR)
-        const filtered = data.filter(c => c.type !== 'Özel Etiket');
+        // 🔥 SADECE VİTRİN KATEGORİLERİNİ LİSTELE
+        const filtered = data.filter(c => c.type === 'Özel Etiket');
         setCategories(filtered);
         setLoading(false);
       })
@@ -46,10 +55,10 @@ export default function Categories() {
     try {
       if (isEditing) {
         await updateCategory(currentId, { ...formData, id: currentId });
-        toast.success("✅ İlaç Kategorisi güncellendi!");
+        toast.success("✅ Vitrin Kategorisi güncellendi!");
       } else {
-        await addCategory(formData);
-        toast.success("✅ Yeni İlaç Kategorisi eklendi!");
+        await addCategory(formData); // type zaten form statende 'Özel Etiket' olarak gidecek
+        toast.success("✅ Yeni Vitrin Kategorisi eklendi!");
       }
       setShowModal(false);
       loadData();
@@ -60,7 +69,7 @@ export default function Categories() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) {
+    if (window.confirm("Bu vitrin kategorisini silmek istediğinize emin misiniz?")) {
       try {
         await deleteCategory(id);
         toast.info("🗑️ Kategori silindi.");
@@ -73,14 +82,20 @@ export default function Categories() {
   };
 
   const openEditModal = (cat) => {
-    setFormData({ name: cat.name, type: cat.type, description: cat.description });
+    setFormData({ 
+      name: cat.name, 
+      type: "Özel Etiket", 
+      description: cat.description,
+      icon: cat.icon || "gridOutline",      
+      colorHex: cat.colorHex || "#f3f4f6"   
+    });
     setCurrentId(cat.id);
     setIsEditing(true);
     setShowModal(true);
   };
 
   const openAddModal = () => {
-    setFormData({ name: "", type: "İlaç Türü", description: "" });
+    setFormData({ name: "", type: "Özel Etiket", description: "", icon: "gridOutline", colorHex: "#f3f4f6" });
     setIsEditing(false);
     setShowModal(true);
   };
@@ -88,8 +103,8 @@ export default function Categories() {
   return (
     <div className="container mt-4 mb-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>💊 İlaç Kategori Yönetimi</h2>
-        <button className="btn btn-primary" onClick={openAddModal}>+ Yeni İlaç Kategorisi</button>
+        <h2>🛍️ Vitrin Kategori Yönetimi</h2>
+        <button className="btn btn-warning fw-bold" onClick={openAddModal}>+ Yeni Vitrin Ekle</button>
       </div>
 
       {loading ? <p>Yükleniyor...</p> : (
@@ -97,8 +112,8 @@ export default function Categories() {
           <table className="table table-hover align-middle mb-0">
             <thead className="bg-light">
               <tr>
-                <th>Kategori Adı</th>
-                <th>Tür</th>
+                <th>Vitrin Adı</th>
+                <th>Mobil Görünüm (Renk/İkon)</th>
                 <th>Açıklama</th>
                 <th style={{width: "150px"}}>İşlemler</th>
               </tr>
@@ -108,7 +123,10 @@ export default function Categories() {
                 <tr key={cat.id}>
                   <td className="fw-bold">{cat.name}</td>
                   <td>
-                    <span className={`badge ${cat.type === 'Hastalık Grubu' ? 'bg-danger' : 'bg-info'}`}>{cat.type}</span>
+                    <div className="d-flex align-items-center gap-2">
+                      <div style={{ width: '24px', height: '24px', backgroundColor: cat.colorHex || '#f3f4f6', borderRadius: '4px', border: '1px solid #ccc' }}></div>
+                      <span className="small text-muted">{cat.icon || 'gridOutline'}</span>
+                    </div>
                   </td>
                   <td className="text-muted small">{cat.description}</td>
                   <td>
@@ -117,6 +135,7 @@ export default function Categories() {
                   </td>
                 </tr>
               ))}
+              {categories.length === 0 && <tr><td colSpan="4" className="text-center py-4">Vitrin kategorisi yok.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -127,19 +146,25 @@ export default function Categories() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">{isEditing ? "Düzenle" : "Ekle"}</h5>
+                <h5 className="modal-title">{isEditing ? "Vitrin Düzenle" : "Yeni Vitrin Ekle"}</h5>
                 <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                    <label className="form-label">Kategori Türü</label>
-                    <select className="form-select" name="type" value={formData.type} onChange={handleInputChange}>
-                        {categoryTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Kategori Adı</label>
+                    <label className="form-label">Vitrin Adı (Kozmetik, Vitamin vb.)</label>
                     <input type="text" className="form-control" name="name" value={formData.name} onChange={handleInputChange} />
+                </div>
+                <div className="row mb-3">
+                  <div className="col-8">
+                    <label className="form-label">Mobil Vitrin İkonu</label>
+                    <select className="form-select" name="icon" value={formData.icon} onChange={handleInputChange}>
+                        {availableIcons.map(icon => <option key={icon.value} value={icon.value}>{icon.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="col-4">
+                    <label className="form-label">Arka Plan Rengi</label>
+                    <input type="color" className="form-control form-control-color w-100" name="colorHex" value={formData.colorHex} onChange={handleInputChange} />
+                  </div>
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Açıklama</label>

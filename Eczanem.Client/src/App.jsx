@@ -25,6 +25,7 @@ import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import OnlineOrders from './pages/OnlineOrders';
 import AddVitrinProduct from './pages/Vitrin/AddVitrinProduct';
+import ShowcaseCategories from './pages/Vitrin/ShowcaseCategories';
 function App() {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -72,6 +73,7 @@ function App() {
            <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
            <Route path="/online-orders" element={user ? <OnlineOrders /> : <Navigate to="/login" />} />
            <Route path="/vitrin/add" element={user ? <AddVitrinProduct /> : <Navigate to="/login" />} />
+           <Route path="/vitrin-kategorileri" element={<ShowcaseCategories />} />
           </Routes>
         </div>
       </div>

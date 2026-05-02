@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar, 
-  IonButtons, IonButton, IonSearchbar, IonList, 
-  IonItem, IonLabel, IonIcon, IonSpinner
+  IonSearchbar, IonList, IonItem, IonLabel, IonIcon, IonSpinner
 } from '@ionic/react';
-import { chevronForwardOutline, chevronBackOutline } from 'ionicons/icons'; 
+import { chevronForwardOutline } from 'ionicons/icons'; 
 import { getCategories } from '../services/productService'; 
 
 interface Category {
@@ -12,10 +11,11 @@ interface Category {
   name: string;
 }
 
-const Medicines: React.FC = () => {
+const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
+  // 🔥 useIonRouter uyarısını silerek düzelttik
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -54,13 +54,6 @@ const Medicines: React.FC = () => {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar color="primary">
-          <IonButtons slot="start">
-            {/* 🔥 İŞTE SİHİRLİ DOKUNUŞ BURADA 🔥 */}
-            {/* routerLink ve routerDirection kullanarak Ionic'in geçişleri doğal yolla (sorunsuz) halletmesini sağlıyoruz */}
-            <IonButton routerLink="/dashboard" routerDirection="back">
-              <IonIcon slot="icon-only" icon={chevronBackOutline} style={{ color: 'white' }} />
-            </IonButton>
-          </IonButtons>
           <IonTitle>Kategoriler</IonTitle>
         </IonToolbar>
 
@@ -132,4 +125,4 @@ const Medicines: React.FC = () => {
   );
 };
 
-export default Medicines;
+export default Categories; // 🔥 BURAYI DA CATEGORIES OLARAK GÜNCELLEDİK

@@ -11,7 +11,7 @@ import { homeOutline, gridOutline, heartOutline, cartOutline, personOutline } fr
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Medicines from './pages/Medicines';
+import Categories from './pages/Categories'; // 🔥 BURAYI DÜZELTTİK
 import MedicineDetail from './pages/MedicineDetail';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
@@ -38,9 +38,9 @@ const MainTabs: React.FC = () => {
     <IonTabs>
       <IonRouterOutlet>
         
-        {/* 🎯 ÇÖZÜM: render={() => ...} formatına geçtik */}
         <Route exact path="/app/home" render={() => <Dashboard />} /> 
-        <Route exact path="/app/categories" render={() => <Medicines />} /> 
+        {/* 🔥 VE AŞAĞIDAKİ YÖNLENDİRMEYİ DE DÜZELTTİK */}
+        <Route exact path="/app/categories" render={() => <Categories />} /> 
         <Route exact path="/app/favorites" render={() => <Favorites />} />
         <Route exact path="/app/cart" render={() => <Orders />} /> 
         <Route exact path="/app/profile" render={() => <Profile />} />
