@@ -23,5 +23,9 @@ namespace Eczanem.Api.Data
         public DbSet<ChronicDisease> ChronicDiseases { get; set; } // Kronik Hastalıklar Tablosu
         public DbSet<PatientMedicine> PatientMedicines { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<FavoriteProduct> FavoriteProducts { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
     }
 }

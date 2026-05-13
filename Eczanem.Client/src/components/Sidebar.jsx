@@ -121,9 +121,11 @@ export default function Sidebar() {
                             </Link>
                         </li>
                         <li>
-                            <Link to="/vitrin/add" className="nav-link text-warning py-1 small fw-bold">
-                                ➕ Yeni Ürün Ekle
-                            </Link>
+                            <li>
+                              <Link to="/vitrin/products" className="nav-link text-white-50 py-1 small">
+                                  🛍️ Vitrin Ürünleri
+                             </Link>
+                            </li>
                         </li>
                         <li>
                             <Link to="/online-orders" className="nav-link text-white-50 py-1 small">

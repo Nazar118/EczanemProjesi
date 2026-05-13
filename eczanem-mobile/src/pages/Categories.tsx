@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar, 
-  IonSearchbar, IonList, IonItem, IonLabel, IonIcon, IonSpinner
+  IonSearchbar, IonList, IonItem, IonLabel, IonIcon, IonSpinner, useIonRouter
 } from '@ionic/react';
 import { chevronForwardOutline } from 'ionicons/icons'; 
 import { getCategories } from '../services/productService'; 
@@ -9,13 +9,14 @@ import { getCategories } from '../services/productService';
 interface Category {
   id: number;
   name: string;
+  type?: string; 
 }
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
-  // 🔥 useIonRouter uyarısını silerek düzelttik
+  const router = useIonRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -23,18 +24,8 @@ const Categories: React.FC = () => {
         const responseData = await getCategories(); 
         
         if (responseData && Array.isArray(responseData)) {
-            const vitrinKategorileri = responseData.filter(cat => {
-              if(!cat.name) return false; 
-              const nameL = cat.name.toLowerCase();
-              return nameL.includes('vitamin') ||
-                     nameL.includes('takviye') ||
-                     nameL.includes('ağız') ||
-                     nameL.includes('dermo') ||
-                     nameL.includes('kozmetik') ||
-                     nameL.includes('anne') ||
-                     nameL.includes('bebek') ||
-                     nameL.includes('bakım');
-            });
+            // 🔥 İŞTE BURADAKİ 'any' YAZISINI 'Category' OLARAK DÜZELTTİK
+            const vitrinKategorileri = responseData.filter((cat: Category) => cat.type === 'Özel Etiket');
             setCategories(vitrinKategorileri);
         }
       } catch (error) {
@@ -87,18 +78,16 @@ const Categories: React.FC = () => {
           <IonList lines="full" style={{ padding: 0 }}>
             {filteredCategories.map((cat) => (
               <IonItem 
-                key={cat.id} 
-                button 
-                detail={false} 
-                onClick={() => {
-                  console.log(`${cat.name} kategorisine tıklandı!`);
-                }}
-                style={{
-                  '--padding-start': '20px',
-                  '--padding-end': '20px',
-                  '--min-height': '60px'
-                }}
-              >
+                  key={cat.id} 
+                  button 
+                  detail={false} 
+                  onClick={() => router.push(`/app/category-products/${cat.id}`, 'forward')} 
+                  style={{
+                    '--padding-start': '20px',
+                    '--padding-end': '20px',
+                    '--min-height': '60px'
+                  }}
+                >
                 <IonLabel 
                   style={{ 
                     fontSize: '14px', 
@@ -125,4 +114,4 @@ const Categories: React.FC = () => {
   );
 };
 
-export default Categories; // 🔥 BURAYI DA CATEGORIES OLARAK GÜNCELLEDİK
+export default Categories;

@@ -77,5 +77,78 @@ namespace Eczanem.Api.Controllers
 
             return Ok(new { message = "Ürün başarıyla yüklendi!", product });
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound("Silinmek istenen ürün bulunamadı.");
+            }
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Ürün başarıyla silindi." });
+        }
+        // PUT: api/Products/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductUploadDto dto)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return NotFound("Güncellenecek ürün bulunamadı.");
+            }
+
+            // Metin bilgilerini güncelle
+            product.Name = dto.Name;
+            product.Price = dto.Price;
+            product.CategoryId = dto.CategoryId;
+            product.Stock = dto.Stock;
+            product.Description = dto.Description;
+            product.IsBestSeller = dto.IsBestSeller;
+            product.IsRecommended = dto.IsRecommended;
+
+            // EĞER KULLANICI DÜZENLEME EKRANINDA YENİ RESİM SEÇTİYSE:
+            if (dto.ImageFile != null && dto.ImageFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + "_" + dto.ImageFile.FileName;
+                var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                var filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.ImageFile.CopyToAsync(stream);
+                }
+
+                product.ImageUrl = $"/images/products/{fileName}";
+            }
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Products.Any(e => e.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok(new { message = "Ürün başarıyla güncellendi!", product });
+        }
     }
 }

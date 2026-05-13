@@ -14,6 +14,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false); // Butona basıldığında dönecek ikon için ekledik
 
   const handleLogin = async () => {
+    localStorage.removeItem('currentUser');
     if (!tcNo || !password) {
       setToastMessage('Lütfen TC ve Şifre alanlarını doldurun.');
       setShowToast(true);
